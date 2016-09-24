@@ -25,7 +25,7 @@ Server::Server(const unsigned short port, int n_threads)
 
 void Server::add_resources()
 {
-    resource["^/work$"]["GET"] = [](std::shared_ptr<Response> response, std::shared_ptr<Request> request)
+    resource["^/work$"]["GET"] = [](std::shared_ptr<Response> response, std::shared_ptr<Request> /*request*/)
     {
         std::thread work_thread([response]()
             {
