@@ -2,19 +2,15 @@
 
 using namespace II2202;
 
-Server::Session::Session()
+Server::Session::Session(std::atomic<int>& session)
+    :n_sessions(&session)
 {
-    n_sessions++;
+    (*n_sessions)++;
 }
 
 Server::Session::~Session()
 {
-    n_sessions--;
-}
-
-int Server::Session::getSessions()
-{
-    return n_sessions;
+    (*n_sessions)--;
 }
 
 Server::Server(const unsigned short port, int n_threads)
@@ -25,12 +21,12 @@ Server::Server(const unsigned short port, int n_threads)
 
 void Server::add_resources()
 {
-    resource["^/work$"]["GET"] = [](std::shared_ptr<Response> response, std::shared_ptr<Request> /*request*/)
+    resource["^/work$"]["GET"] = [&](std::shared_ptr<Response> response, std::shared_ptr<Request> /*request*/)
     {
-        std::thread work_thread([response]()
+        std::thread work_thread([&, response]()
             {
-                Session new_session;
-                std::this_thread::sleep_for(std::chrono::seconds(5));
+                Session new_session{n_sessions};
+                std::this_thread::sleep_for(std::chrono::seconds(10));
                 std::string message="Work done";
                 *response << "HTTP/1.1 200 OK\r\nContent-Length: " << message.length() << "\r\n\r\n" << message;
             });
@@ -39,6 +35,9 @@ void Server::add_resources()
     }; 
 }
 
-Server::~Server(){}
+int Server::getSessions()
+{
+    return n_sessions;
+}
 
-std::atomic<int> Server::Session::n_sessions(0);
+Server::~Server(){}

@@ -15,9 +15,6 @@ namespace II2202
     {
         public:
             
-            Server(const unsigned short, int);
-            ~Server();
-            
             class Session
             {
                 friend class Server;
@@ -28,19 +25,23 @@ namespace II2202
                     Session(const Session&&) = delete;
                     Session operator=(const Session&) = delete;
                     Session operator=(const Session&&) = delete;
-                    static int getSessions();
 
                 private:
 
-                    Session();
+                    Session(std::atomic<int>& n_sessions);
                     ~Session();
                     
-                    static std::atomic<int> n_sessions;
+                    std::atomic<int>* n_sessions;
             };
 
+            Server(const unsigned short, int);
+            ~Server();
+            int getSessions();
+
         private:
- 
+         
             void add_resources();
+            std::atomic<int> n_sessions{0};
     };
 }
 #endif /*SERVER_HPP*/
