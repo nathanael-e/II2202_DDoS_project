@@ -1,5 +1,5 @@
 #Compiler and debug flags.
-CC := g++ -std=c++11
+CC := g++ -std=c++14
 CFLAGS := -g -Wall
 
 #Include directory, source directory and build directory.
