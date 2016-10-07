@@ -21,6 +21,11 @@ Server::Server(const unsigned short port, int n_threads)
 
 void Server::add_resources()
 {
+    resource["^/getSessions$"]["GET"] = [&](std::shared_ptr<Response> response, std::shared_ptr<Request> /*request*/)
+    {
+        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << std::to_string(n_sessions).length()  << "\r\n\r\n" << n_sessions;
+    }; 
+
     resource["^/work$"]["GET"] = [&](std::shared_ptr<Response> response, std::shared_ptr<Request> /*request*/)
     {
         std::thread work_thread([&, response]()
