@@ -14,19 +14,21 @@ int main()
 	
     //GET-example for the path /info
     //Responds with request-information
-    server.resource["^/$"]["GET"]=[](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+    server.resource["^.+$"]["GET"]=[](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
         stringstream content_stream;
         content_stream << "<h1>Request from " << request->remote_endpoint_address << " (" << request->remote_endpoint_port << ")</h1>";
         content_stream << request->method << " " << request->path << " HTTP/" << request->http_version << "<br>";
         for(auto& header: request->header) {
             content_stream << header.first << ": " << header.second << "<br>";
         }
+
+	std::cout << request -> path << endl;
         
         //find length of content_stream (length received using content_stream.tellp())
         content_stream.seekp(0, ios::end);
         //Client examples
    	HttpClient client("localhost:8080");
-    	auto r1=client.request("GET", "/index.html");
+    	auto r1=client.request("GET", request -> path);
 	stringstream ss;
 	ss << r1->content.rdbuf(); 
 	string res = ss.str();	

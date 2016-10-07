@@ -10,5 +10,8 @@ default: server
 server: simple_web_server.cpp $(OBJS)
 	$(CC) $(LFLAGS) simple_web_server.cpp $(SERVER_FLAGS) $(OBJS) -o simple_web_server.out
 
+ddos: ddos_client.cpp $(OBJS)
+	$(CC) $(LFLAGS) ddos_client.cpp $(SERVER_FLAGS) $(OBJS) -o ddos_client.out
+
 clean:
 	\rm *.o *~ simple_web_server
