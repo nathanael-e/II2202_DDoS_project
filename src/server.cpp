@@ -32,6 +32,7 @@ void Server::do_work(std::shared_ptr<HttpServer::Response>& response, std::share
 {
     std::thread work_thread = std::thread([response, request, this]()
                 {
+		    std::this_thread::sleep_for(std::chrono::seconds(4));
                     Thread_counter new_thread(n_threads);
                     std::string s = "Work done";
                     std::this_thread::sleep_for(std::chrono::seconds(1));

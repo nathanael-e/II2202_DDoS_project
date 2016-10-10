@@ -16,8 +16,10 @@ LoadBalancer::~LoadBalancer()
 
 void LoadBalancer::add_resources()
 {
+    
     resource["^/work$"]["GET"]=[&](std::shared_ptr<Response> response, std::shared_ptr<Request> request)
     {
+        
         std::thread new_connection = std::thread([response, request]()
                 {
                         std::cout<<"Im here"<<std::endl;
