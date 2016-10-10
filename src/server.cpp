@@ -2,47 +2,51 @@
 
 using namespace II2202;
 
-Server::Session::Session(std::atomic<int>& session)
-    :n_sessions(&session)
+Server::Thread_counter::Thread_counter(std::atomic<int>& N_threads)
+    :n_threads(&N_threads)
 {
-    (*n_sessions)++;
+    (*n_threads)++;
 }
 
-Server::Session::~Session()
+Server::Thread_counter::~Thread_counter()
 {
-    (*n_sessions)--;
+    (*n_threads)--;
 }
 
 Server::Server(const unsigned short port, int n_threads)
     :HttpServer(port, n_threads)
+{}
+
+Server::~Server()
 {
-    add_resources(); 
+    if(server_thread.joinable())
+        server_thread.join();
 }
 
-void Server::add_resources()
+void Server::start_server()
 {
-    resource["^/getSessions$"]["GET"] = [&](std::shared_ptr<Response> response, std::shared_ptr<Request> /*request*/)
-    {
-        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << std::to_string(n_sessions).length()  << "\r\n\r\n" << n_sessions;
-    }; 
+    server_thread = std::thread([this](){this->start();});
+}
 
-    resource["^/work$"]["GET"] = [&](std::shared_ptr<Response> response, std::shared_ptr<Request> /*request*/)
-    {
-        std::thread work_thread([&, response]()
-            {
-                Session new_session{n_sessions};
-                std::this_thread::sleep_for(std::chrono::seconds(10));
-                std::string message="Work done";
-                *response << "HTTP/1.1 200 OK\r\nContent-Length: " << message.length() << "\r\n\r\n" << message;
-            });
+void Server::do_work(std::shared_ptr<HttpServer::Response>& response, std::shared_ptr<HttpServer::Request>& request)
+{
+    std::thread work_thread = std::thread([response, request, this]()
+                {
+                    Thread_counter new_thread(n_threads);
+                    std::string s = "Work done";
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                    *response << "HTTP/1.1 200 OK\r\nContent-Length: " << s.length()  << "\r\n\r\n" << s;
+                });
 
-        work_thread.detach();
-    }; 
+    work_thread.detach();
 }
 
 int Server::getSessions()
 {
-    return n_sessions;
+    return n_threads;
 }
 
-Server::~Server(){}
+bool Server::isFull() const
+{
+    return n_threads == MAX_THREADS;
+}

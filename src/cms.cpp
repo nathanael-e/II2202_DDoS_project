@@ -8,32 +8,51 @@ CMS::CMS(const unsigned short port, int n_threads)
     add_reseources();
 }
 
+CMS::~CMS()
+{
+    if(server_thread.joinable())
+        server_thread.join();
+}
+
 void CMS::add_reseources()
 {
-    resource["^.*$"]["GET"] = [&](std::shared_ptr<Response> response, std::shared_ptr<Request> request)
+    resource["^/get_status$"]["GET"] = [&](std::shared_ptr<Response> response, std::shared_ptr<Request> /*request*/)
+    {  
+       if(full_load())
+           *response << "HTTP/1.1 200 OK\r\nContent-Length: " << 4 << "\r\n\r\n" << "FULL";
+       else
+           *response << "HTTP/1.1 200 OK\r\nContent-Length: " << 5 << "\r\n\r\n" << "EMPTY";
+    };
+    
+    resource["^/work$"]["GET"] = [&](std::shared_ptr<Response> response, std::shared_ptr<Request> request)
     {
-
-        for(auto it = servers.begin(); it != servers.end(); it++)
-        {
-            auto answer = it->get()->request("GET", "/getSessions");
-            std::stringstream ss;
-            ss<<answer->content.rdbuf();
-            int sessions = std::stoi(ss.str());
-
-            if(sessions <= 20)
+        for(auto& server:servers)
+            if(!server->isFull())
             {
-                auto ans  = it->get()->request("GET", request->path);
-                std::stringstream s2;
-                s2<<ans->content.rdbuf();
-                std::string s = s2.str();
-                *response << "HTTP/1.1 200 OK\r\nContent-Length: " << s.size() << "\r\n\r\n" << s;
+                server->do_work(response, request);
                 break;
-             }
-        }
+            }
     }; 
 }
 
-void CMS::add_server(const std::string ip)
+bool CMS::full_load() const
 {
-    servers.push_back(std::make_unique<HttpClient>(ip));
+    for(auto& server:servers)
+        if(!server->isFull())
+            return false;
+    
+    return true;
+}
+
+void CMS::add_server(const unsigned short port, int n_threads)
+{
+    servers.push_back(std::make_unique<II2202::Server>(port, n_threads));
+}
+
+void CMS::start_up()
+{
+    for(auto& server:servers)
+        server->start_server();
+
+    server_thread = std::thread([this](){this->start();});
 }

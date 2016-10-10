@@ -10,20 +10,25 @@
 
 using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
 using HttpClient = SimpleWeb::Client<SimpleWeb::HTTP>;
-using d_servers = std::unique_ptr<HttpClient>;
 
 namespace II2202
 {
     class CMS
         :public HttpServer
     {
+        using server_base = std::vector<std::unique_ptr<II2202::Server>>;
+
         public:
             CMS(const unsigned short, int);
-            void add_server(const std::string ip);
+            ~CMS();
+            void add_server(const unsigned short, int);
+            void start_up();
+            bool full_load() const;
         
         private:
             void add_reseources();
-            std::vector<d_servers> servers;
+            server_base servers;
+            std::thread server_thread;
     };
 }
 #endif

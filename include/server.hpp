@@ -1,6 +1,8 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#define MAX_THREADS 500
+
 #include<string>
 #include<mutex>
 #include<atomic>
@@ -11,37 +13,44 @@ using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
 
 namespace II2202
 {
-    class Server:public HttpServer 
+    class Server
+        :public HttpServer 
     {
+
         public:
             
-            class Session
+            class Thread_counter
             {
                 friend class Server;
 
                 public:
 
-                    Session(const Session&) = delete;
-                    Session(const Session&&) = delete;
-                    Session operator=(const Session&) = delete;
-                    Session operator=(const Session&&) = delete;
+                    Thread_counter(const Thread_counter&) = delete;
+                    Thread_counter(const Thread_counter&&) = delete;
+                    Thread_counter operator=(const Thread_counter&) = delete;
+                    Thread_counter operator=(const Thread_counter&&) = delete;
 
                 private:
 
-                    Session(std::atomic<int>& n_sessions);
-                    ~Session();
+                    Thread_counter(std::atomic<int>& n_sessions);
+                    ~Thread_counter();
                     
-                    std::atomic<int>* n_sessions;
+                    std::atomic<int>* n_threads;
             };
+
 
             Server(const unsigned short, int);
             ~Server();
+
+            void do_work(std::shared_ptr<HttpServer::Response>&, std::shared_ptr<Request>&);
             int getSessions();
+            bool isFull() const;
+            void start_server();
 
         private:
-         
-            void add_resources();
-            std::atomic<int> n_sessions{0};
+             
+            std::atomic<int> n_threads{0};
+            std::thread server_thread;
     };
 }
 #endif /*SERVER_HPP*/

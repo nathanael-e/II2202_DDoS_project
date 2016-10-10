@@ -3,6 +3,7 @@
 
 #include "cms.hpp"
 #include "server.hpp"
+#include "load_balancer.hpp"
 #include <iostream>
 #include <thread>
 #include<string>
@@ -15,24 +16,16 @@ using namespace II2202;
 int main()
 {
 
-    CMS c(8080, 1);
 
-    Server s(8081, 1);
+    LoadBalancer lb(8080, 1);
 
-    std::thread cms_thread([&c]()
-            {
-                c.start();
-            });
+    CMS c(8081, 1);
+    c.add_server(8082, 1);    
+    c.start_up();
 
-     std::thread server_thread([&s]()
-            {
-                s.start();
-            });
+    lb.add_connection("localhost:8081");
 
-    c.add_server("localhost:8081");
-
-    cms_thread.join();
-    server_thread.join();
+    lb.start_server();
 
     return 0;
 }
