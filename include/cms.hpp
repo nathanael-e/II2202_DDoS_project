@@ -29,6 +29,7 @@ namespace II2202
             void add_reseources();
             server_base servers;
             std::thread server_thread;
+            std::mutex m_tex;
     };
 }
 #endif

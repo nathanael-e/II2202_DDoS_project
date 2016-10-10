@@ -17,7 +17,10 @@ CMS::~CMS()
 void CMS::add_reseources()
 {
     resource["^/get_status$"]["GET"] = [&](std::shared_ptr<Response> response, std::shared_ptr<Request> /*request*/)
-    {  
+    { 
+       
+       m_tex.lock();
+       
        float total_load = 0; 
 
        for(auto& server: servers)
@@ -25,7 +28,11 @@ void CMS::add_reseources()
 
        std::string load  = std::to_string(total_load/servers.size());
 
+       std::cout<<"Tot: "<<load<<std::endl;
+
        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << load.size() << "\r\n\r\n" << load;
+       
+        m_tex.unlock();
     };
     
     resource["^/work$"]["GET"] = [&](std::shared_ptr<Response> response, std::shared_ptr<Request> request)

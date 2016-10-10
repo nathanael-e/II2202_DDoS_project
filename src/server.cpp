@@ -25,7 +25,7 @@ Server::~Server()
 
 void Server::start_server()
 {
-    server_thread = std::thread([this](){this->start();});
+    server_thread = std::thread(([this](){this->start();}));
 }
 
 void Server::do_work(std::shared_ptr<HttpServer::Response>& response, std::shared_ptr<HttpServer::Request>& request)
@@ -51,10 +51,10 @@ float Server::server_load() const
     return (float) n_threads / (float) MAX_THREADS;
 }
 
-int Server::isFull() const
+bool Server::isFull() const
 {
     if(n_threads >= MAX_THREADS)
-        return 1;
+        return true;
     else
-        return 0;
+        return false;
 }

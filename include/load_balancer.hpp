@@ -6,6 +6,7 @@
 #include<thread>
 #include<map>
 
+#include "map_wrapper.hpp"
 #include "server_http.hpp"
 #include "client_http.hpp"
 
@@ -41,11 +42,12 @@ namespace II2202
 
            std::thread cms_updates;
 
-           std::map<std::string, float> total_connections;
+//           std::map<std::string, float> total_connections;
 
-           std::map<std::string, float> active_connections;
+//           std::map<std::string, float> active_connections;
 
-           std::unique_ptr<HttpClient> client;
+           map_wrapper<std::string, float> total_connections;
+           map_wrapper<std::string, float> active_connections;
  
     };
 }
