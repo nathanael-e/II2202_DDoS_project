@@ -23,7 +23,8 @@ int main()
     c.add_server(8082, 1);    
     c.start_up();
 
-    lb.add_connection("localhost:8081");
+    //lb.add_connection("localhost:8081");
+    lb.add_connection("130.229.144.222:8080");
 
     lb.start_server();
 

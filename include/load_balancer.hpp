@@ -4,6 +4,7 @@
 #include<vector>
 #include<memory>
 #include<thread>
+#include<map>
 
 #include "server_http.hpp"
 #include "client_http.hpp"
@@ -30,11 +31,22 @@ namespace II2202
 
            void add_resources();
 
-           std::vector<std::unique_ptr<HttpClient>> connections; 
+           void update();
+
+           void scale_system();
+
+           float get_system_load();
 
            std::thread server_thread;
+
            std::thread cms_updates;
-   
+
+           std::map<std::string, float> total_connections;
+
+           std::map<std::string, float> active_connections;
+
+           std::unique_ptr<HttpClient> client;
+ 
     };
 }
 

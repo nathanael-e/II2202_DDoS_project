@@ -1,7 +1,7 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#define MAX_THREADS 500
+#define MAX_THREADS 10 
 
 #include<string>
 #include<mutex>
@@ -44,7 +44,8 @@ namespace II2202
 
             void do_work(std::shared_ptr<HttpServer::Response>&, std::shared_ptr<Request>&);
             int getSessions();
-            bool isFull() const;
+            int isFull() const;
+            float server_load() const;
             void start_server();
 
         private:

@@ -34,7 +34,7 @@ void Server::do_work(std::shared_ptr<HttpServer::Response>& response, std::share
                 {
                     Thread_counter new_thread(n_threads);
                     std::string s = "Work done";
-                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                    std::this_thread::sleep_for(std::chrono::seconds(5));
                     *response << "HTTP/1.1 200 OK\r\nContent-Length: " << s.length()  << "\r\n\r\n" << s;
                 });
 
@@ -46,7 +46,15 @@ int Server::getSessions()
     return n_threads;
 }
 
-bool Server::isFull() const
+float Server::server_load() const
 {
-    return n_threads == MAX_THREADS;
+    return (float) n_threads / (float) MAX_THREADS;
+}
+
+int Server::isFull() const
+{
+    if(n_threads >= MAX_THREADS)
+        return 1;
+    else
+        return 0;
 }

@@ -18,10 +18,14 @@ void CMS::add_reseources()
 {
     resource["^/get_status$"]["GET"] = [&](std::shared_ptr<Response> response, std::shared_ptr<Request> /*request*/)
     {  
-       if(full_load())
-           *response << "HTTP/1.1 200 OK\r\nContent-Length: " << 4 << "\r\n\r\n" << "FULL";
-       else
-           *response << "HTTP/1.1 200 OK\r\nContent-Length: " << 5 << "\r\n\r\n" << "EMPTY";
+       float total_load = 0; 
+
+       for(auto& server: servers)
+           total_load += server->server_load();
+
+       std::string load  = std::to_string(total_load/servers.size());
+
+       *response << "HTTP/1.1 200 OK\r\nContent-Length: " << load.size() << "\r\n\r\n" << load;
     };
     
     resource["^/work$"]["GET"] = [&](std::shared_ptr<Response> response, std::shared_ptr<Request> request)
@@ -30,8 +34,10 @@ void CMS::add_reseources()
             if(!server->isFull())
             {
                 server->do_work(response, request);
-                break;
+                return;
             }
+
+        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << 4 << "\r\n\r\n" << "FULL";
     }; 
 }
 
