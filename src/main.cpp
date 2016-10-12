@@ -21,21 +21,25 @@ int main()
     CMS c2(8083, 1);
     CMS c3(8084, 1);
     CMS c4(8085, 1);
+    CMS c5(8086, 1);
 
-    c.add_server(8086, 1);    
-    c2.add_server(8087, 1);
-    c3.add_server(8088, 1);
-    c4.add_server(8089, 1);
+    c.add_server(8087, 1);    
+    c2.add_server(8088, 1);
+    c3.add_server(8089, 1);
+    c4.add_server(8090, 1);
+    c5.add_server(8091, 1);
 
     c.start_up();
     c2.start_up();
     c3.start_up();
     c4.start_up();
+    c5.start_up();
   
     lb.add_connection("localhost:8082");
     lb.add_connection("localhost:8083");
     lb.add_connection("localhost:8084");
     lb.add_connection("localhost:8085");
+    lb.add_connection("localhost:8086");
 
     lb.start_server();
 
