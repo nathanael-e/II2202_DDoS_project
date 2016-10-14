@@ -1,4 +1,5 @@
 #include "server.hpp"
+#include <fstream>
 
 using namespace II2202;
 
@@ -34,7 +35,20 @@ void Server::do_work(std::shared_ptr<HttpServer::Response>& response, std::share
                 {
                     Thread_counter new_thread(n_threads);
                     std::string s = "Work done";
-                    std::this_thread::sleep_for(std::chrono::seconds(5));
+                    
+                    std::ifstream file;
+                    file.open("bigassdoc");
+                    char output[10000];
+                    if(file.is_open()){
+                        while(!file.eof()){
+                            file >> output;
+                            
+                        }
+                    }
+                    std::stringstream ss;
+                    ss << output;
+                    s = ss.str();
+                   // std::this_thread::sleep_for(std::chrono::seconds(5));
                     *response << "HTTP/1.1 200 OK\r\nContent-Length: " << s.length()  << "\r\n\r\n" << s;
                 });
 
