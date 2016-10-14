@@ -15,7 +15,7 @@ using namespace II2202;
 
 int main()
 {
-    LoadBalancer lb(8081, 1);
+    LoadBalancer lb(8080, 1);
 
     CMS c(8082, 1);
     CMS c2(8083, 1);
