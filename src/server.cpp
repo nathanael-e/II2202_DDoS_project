@@ -55,9 +55,11 @@ bool Server::isFull() const
 {
     m_tex.lock();
 
-    if(n_threads >= MAX_THREADS)
+    if(n_threads >= MAX_THREADS){
+        m_tex.unlock();
         return true;
-    else
-        return false;
+    }
+        
     m_tex.unlock();
+    return false;
 }
