@@ -52,6 +52,7 @@ namespace II2202
              
             std::atomic<int> n_threads{0};
             std::thread server_thread;
+            mutable std::mutex m_tex;
     };
 }
 #endif /*SERVER_HPP*/

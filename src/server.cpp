@@ -53,8 +53,11 @@ float Server::server_load() const
 
 bool Server::isFull() const
 {
+    m_tex.lock();
+
     if(n_threads >= MAX_THREADS)
         return true;
     else
         return false;
+    m_tex.unlock();
 }
